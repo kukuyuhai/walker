@@ -3,17 +3,17 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Hexo
-subtitle: ''
-description: ''
-keywords: vue
+title: 枫桥亭晚
+subtitle: '前端停靠站'
+description: '不学不是前端人'
+keywords: html css3 Vue Nodejs Typescript
 author: kukuyuhai
 language: zh-Hans
-timezone: ''
+timezone: 'Asia/Shanghai'
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://example.com/child' and root as '/child/'
-url: http://example.com
+url: https://kukuyuhai.github.io/walker/
 root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
