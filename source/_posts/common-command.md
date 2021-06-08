@@ -17,3 +17,20 @@ tags: ssh node docker mysql
 
 > 打开 github -> settings -> SSH and GPG keys -> 添加公钥
 > 即可使用 ssh 协议 pull and push
+
+### mysql
+
+##### Mysql 允许所有 IP 访问
+
+```sh
+$ mysql -u root -p
+Enter password:
+
+mysql> use mysql
+
+#mysql> GRANT ALL ON *.* to root@'192.168.1.4' IDENTIFIED BY 'your-root-password';
+
+mysql> GRANT ALL ON *.* to root@'%' IDENTIFIED BY 'root';
+
+mysql> FLUSH PRIVILEGES;
+```
