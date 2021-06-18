@@ -8,8 +8,6 @@ tags: osm geojson webgl 3d可视化
 
 ### 1. 数据获取
 
-####
-
 - 打开 https://www.openstreetmap.org/ 搜索城市名称如"上海市"，点击下载 XML。
 
 ```XML
@@ -39,7 +37,7 @@ tags: osm geojson webgl 3d可视化
 
 - 将`<area-query ref="xxxxxxx">`中的 ref 的值替换成之前相加后的 relation id 的值
 
-- 点击右下角的 query，弹出下载提醒，单击保存；下载完成后，以记事本方式打开该文件（此文件即 Hollywood 的城市地图数据），导入到仿真软件中使用即可
+- 点击右下角的 query，弹出下载提醒，单击保存；下载完成后，以记事本方式打开该文件（此文件即 上海市 的城市地图数据），导入到仿真软件中使用即可
 
 ### 2. 数据处理
 
