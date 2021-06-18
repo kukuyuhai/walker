@@ -24,21 +24,21 @@
     var CONFIG = {"hostname":"kukuyuhai.github.io","root":"/walker/","scheme":"Muse","version":"8.0.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
   </script>
 
-  <meta name="description" content="不学不是前端人">
+  <meta name="description" content="城市 3D 可视化。随着 WebGL、物联网、GIS 等相关科学技术的飞速发展，越来越多的城市开始数字化转型。运用数字孪生技术，打造智慧城市场景。更好的服务城市建设治理。  1. 数据获取####  打开 https:&#x2F;&#x2F;www.openstreetmap.org&#x2F; 搜索城市名称如”上海市”，点击下载 XML。  1&lt;relation id&#x3D;&quot;398353&quot;&gt;">
 <meta property="og:type" content="article">
-<meta property="og:title" content="how to new a hexo site">
-<meta property="og:url" content="https://kukuyuhai.github.io/walker/2020/11/21/how-to-new-a-hexo-site/index.html">
+<meta property="og:title" content="使用openstreetmap获取geojson数据">
+<meta property="og:url" content="https://kukuyuhai.github.io/walker/2021/06/18/how-to-get-geojson/index.html">
 <meta property="og:site_name" content="枫桥亭晚">
-<meta property="og:description" content="不学不是前端人">
+<meta property="og:description" content="城市 3D 可视化。随着 WebGL、物联网、GIS 等相关科学技术的飞速发展，越来越多的城市开始数字化转型。运用数字孪生技术，打造智慧城市场景。更好的服务城市建设治理。  1. 数据获取####  打开 https:&#x2F;&#x2F;www.openstreetmap.org&#x2F; 搜索城市名称如”上海市”，点击下载 XML。  1&lt;relation id&#x3D;&quot;398353&quot;&gt;">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-11-21T01:57:40.000Z">
+<meta property="article:published_time" content="2021-06-18T02:46:20.000Z">
 <meta property="article:modified_time" content="2021-06-18T03:18:51.929Z">
 <meta property="article:author" content="kukuyuhai">
-<meta property="article:tag" content="html css3 Vue Nodejs Typescript">
+<meta property="article:tag" content="osm geojson webgl 3d可视化">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="https://kukuyuhai.github.io/walker/2020/11/21/how-to-new-a-hexo-site/">
+<link rel="canonical" href="https://kukuyuhai.github.io/walker/2021/06/18/how-to-get-geojson/">
 
 
 <script class="page-configurations">
@@ -51,7 +51,7 @@
   };
 </script>
 
-  <title>how to new a hexo site | 枫桥亭晚</title>
+  <title>使用openstreetmap获取geojson数据 | 枫桥亭晚</title>
   
 
 
@@ -140,7 +140,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -153,6 +153,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%95%B0%E6%8D%AE%E8%8E%B7%E5%8F%96"><span class="nav-number">1.</span> <span class="nav-text">1. 数据获取</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">2. 数据处理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E9%93%BE%E6%8E%A5%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">相关链接：</span></a></li></ol></li></ol></div>
         </section>
         <!--/noindex-->
 
@@ -211,7 +212,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://kukuyuhai.github.io/walker/2020/11/21/how-to-new-a-hexo-site/">
+    <link itemprop="mainEntityOfPage" href="https://kukuyuhai.github.io/walker/2021/06/18/how-to-get-geojson/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/walker/images/avatar.gif">
@@ -224,7 +225,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          how to new a hexo site
+          使用openstreetmap获取geojson数据
         </h1>
 
         <div class="post-meta-container">
@@ -234,16 +235,10 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
+      
 
-      <time title="创建时间：2020-11-21 09:57:40" itemprop="dateCreated datePublished" datetime="2020-11-21T09:57:40+08:00">2020-11-21</time>
+      <time title="创建时间：2021-06-18 10:46:20 / 修改时间：11:18:51" itemprop="dateCreated datePublished" datetime="2021-06-18T10:46:20+08:00">2021-06-18</time>
     </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-06-18 11:18:51" itemprop="dateModified" datetime="2021-06-18T11:18:51+08:00">2021-06-18</time>
-      </span>
 
   
 </div>
@@ -255,7 +250,40 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        
+        <blockquote>
+<p>城市 3D 可视化。随着 WebGL、物联网、GIS 等相关科学技术的飞速发展，越来越多的城市开始数字化转型。运用数字孪生技术，打造智慧城市场景。更好的服务城市建设治理。</p>
+</blockquote>
+<h3 id="1-数据获取"><a href="#1-数据获取" class="headerlink" title="1. 数据获取"></a>1. 数据获取</h3><p>####</p>
+<ul>
+<li>打开 <a target="_blank" rel="noopener" href="https://www.openstreetmap.org/">https://www.openstreetmap.org/</a> 搜索城市名称如”上海市”，点击下载 XML。</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">relation</span> <span class="attr">id</span>=<span class="string">&quot;398353&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>找到城市的边界 id，将 id 加上 3600000000 后，得到的结果用于后续<code>Overpass API query </code>请求的参数。</p>
+</li>
+<li><p>打开 <a target="_blank" rel="noopener" href="http://www.overpass-api.de/query_form.html">http://www.overpass-api.de/query_form.html</a> 访问 API query page,在打开的 query 框中输入以下代码：</p>
+</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">osm-script</span> <span class="attr">timeout</span>=<span class="string">&quot;1800&quot;</span> <span class="attr">element-limit</span>=<span class="string">&quot;100000000&quot;</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">union</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">area-query</span> <span class="attr">ref</span>=<span class="string">&quot;3600398353&quot;</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">recurse</span> <span class="attr">type</span>=<span class="string">&quot;node-relation&quot;</span> <span class="attr">into</span>=<span class="string">&quot;rels&quot;</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">recurse</span> <span class="attr">type</span>=<span class="string">&quot;node-way&quot;</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">recurse</span> <span class="attr">type</span>=<span class="string">&quot;way-relation&quot;</span>/&gt;</span></span><br><span class="line"> <span class="tag">&lt;/<span class="name">union</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">union</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">item</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">recurse</span> <span class="attr">type</span>=<span class="string">&quot;way-node&quot;</span>/&gt;</span></span><br><span class="line"> <span class="tag">&lt;/<span class="name">union</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">print</span> <span class="attr">mode</span> = <span class="string">&quot;body&quot;</span>/&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>将<code>&lt;area-query ref=&quot;xxxxxxx&quot;&gt;</code>中的 ref 的值替换成之前相加后的 relation id 的值</p>
+</li>
+<li><p>点击右下角的 query，弹出下载提醒，单击保存；下载完成后，以记事本方式打开该文件（此文件即 Hollywood 的城市地图数据），导入到仿真软件中使用即可</p>
+</li>
+</ul>
+<h3 id="2-数据处理"><a href="#2-数据处理" class="headerlink" title="2. 数据处理"></a>2. 数据处理</h3><ul>
+<li>将下载的文件，修改其后缀名为<code>.osm</code>,可以使用文本编辑器打开，其实它是一个 XML 文件，如何将 XML 转换成我们后续需要 geojson 呢？我们可以使用 osmtogeojson 包转换。如下全局安装 osmtogeojson。</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install -g osmtogeojson</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ osmtogeojson file.osm &gt; file.geojson</span><br></pre></td></tr></table></figure>
+
+<p>即可转换生成 geojson 数据。</p>
+<h4 id="相关链接："><a href="#相关链接：" class="headerlink" title="相关链接："></a><em>相关链接：</em></h4><p><a target="_blank" rel="noopener" href="https://www.openstreetmap.org/">OpenStreetMap 开放的地理信息数据库</a></p>
+<p><a target="_blank" rel="noopener" href="http://www.overpass-api.de/query_form.html">overpass Api</a></p>
+
     </div>
 
     
@@ -263,16 +291,19 @@
     
 
     <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/walker/tags/osm-geojson-webgl-3d%E5%8F%AF%E8%A7%86%E5%8C%96/" rel="tag"># osm geojson webgl 3d可视化</a>
+          </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
+                <a href="/walker/2021/06/08/common-command/" rel="prev" title="常用命令">
+                  <i class="fa fa-chevron-left"></i> 常用命令
+                </a>
             </div>
             <div class="post-nav-item">
-                <a href="/walker/2021/01/28/java%E5%85%A5%E9%97%A8%E6%8C%87%E5%BC%95/" rel="next" title="java入门指引">
-                  java入门指引 <i class="fa fa-chevron-right"></i>
-                </a>
             </div>
           </div>
     </footer>
