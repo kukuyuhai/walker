@@ -18,6 +18,20 @@ tags: ssh node docker mysql
 > 打开 github -> settings -> SSH and GPG keys -> 添加公钥
 > 即可使用 ssh 协议 pull and push
 
+#### Git回滚代码到某个commit
+
+##### 回退命令：
+
+```
+$ git reset --hard HEAD^ 回退到上个版本
+$ git reset --hard HEAD~3 回退到前3次提交之前，以此类推，回退到n次提交之前
+$ git reset --hard commit_id 退到/进到 指定commit的sha码
+```
+##### 强推到远程：
+
+```
+$ git push origin HEAD --force
+```
 ### mysql
 
 ##### Mysql 允许所有 IP 访问
