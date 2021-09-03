@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/walker/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/walker/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/walker/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/walker/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/walker/css/main.css">
+
+
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"kukuyuhai.github.io","root":"/walker/","scheme":"Muse","version":"8.0.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+
+  <meta name="description" content="什么是verdaccio？ Verdaccio是一个简单的、零配置要求的本地私有 npm 注册表。无需整个数据库即可开始！Verdaccio 开箱即用，带有 自己的小型数据库，并且能够代理其他注册表（例如 npmjs.org），并在此过程中缓存下载的模块。对于那些希望扩展其存储功能的人，Verdaccio 支持各种社区制作的插件，以连接到服务，例如 Amazon 的 s3、Google Cloud">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何有verdaccio构建一个私有npm仓库？">
+<meta property="og:url" content="https://kukuyuhai.github.io/walker/2021/01/28/verdaccio/index.html">
+<meta property="og:site_name" content="枫桥亭晚">
+<meta property="og:description" content="什么是verdaccio？ Verdaccio是一个简单的、零配置要求的本地私有 npm 注册表。无需整个数据库即可开始！Verdaccio 开箱即用，带有 自己的小型数据库，并且能够代理其他注册表（例如 npmjs.org），并在此过程中缓存下载的模块。对于那些希望扩展其存储功能的人，Verdaccio 支持各种社区制作的插件，以连接到服务，例如 Amazon 的 s3、Google Cloud">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://github.com/kukuyuhai/walker/blob/master/source/images/WechatIMG23.png">
+<meta property="article:published_time" content="2021-01-28T07:46:20.000Z">
+<meta property="article:modified_time" content="2021-09-03T08:10:20.108Z">
+<meta property="article:author" content="kukuyuhai">
+<meta property="article:tag" content="npm 私有库 verdaccio">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/kukuyuhai/walker/blob/master/source/images/WechatIMG23.png">
+
+
+<link rel="canonical" href="https://kukuyuhai.github.io/walker/2021/01/28/verdaccio/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>如何有verdaccio构建一个私有npm仓库？ | 枫桥亭晚</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/walker/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">枫桥亭晚</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">前端停靠站</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <section class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFverdaccio%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">什么是verdaccio？</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-number">1.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9B%E5%BB%BAconfig-yaml"><span class="nav-number">1.2.</span> <span class="nav-text">创建config.yaml</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%85%8D%E7%BD%AEverdaccio%E6%9C%8D%E5%8A%A1"><span class="nav-number">1.3.</span> <span class="nav-text">配置verdaccio服务</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E5%AE%8C%E5%A6%82%E4%B8%8B"><span class="nav-number">1.4.</span> <span class="nav-text">配置完如下</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8verdaccio%E6%9C%8D%E5%8A%A1"><span class="nav-number">1.5.</span> <span class="nav-text">启动verdaccio服务</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%85%8D%E7%BD%AEnginx"><span class="nav-number">1.6.</span> <span class="nav-text">配置nginx</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8"><span class="nav-number">2.</span> <span class="nav-text">如何使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#npm-5-x-6-x"><span class="nav-number">3.</span> <span class="nav-text">npm (5.x, 6.x)</span></a></li></ol></div>
+        </section>
+        <!--/noindex-->
+
+        <section class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">kukuyuhai</p>
+  <div class="site-description" itemprop="description">不学不是前端人</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/walker/archives">
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+        </section>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+      
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://kukuyuhai.github.io/walker/2021/01/28/verdaccio/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/walker/images/avatar.gif">
+      <meta itemprop="name" content="kukuyuhai">
+      <meta itemprop="description" content="不学不是前端人">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="枫桥亭晚">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          如何有verdaccio构建一个私有npm仓库？
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-01-28 15:46:20" itemprop="dateCreated datePublished" datetime="2021-01-28T15:46:20+08:00">2021-01-28</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-09-03 16:10:20" itemprop="dateModified" datetime="2021-09-03T16:10:20+08:00">2021-09-03</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h3 id="什么是verdaccio？"><a href="#什么是verdaccio？" class="headerlink" title="什么是verdaccio？"></a>什么是verdaccio？</h3><blockquote>
+<p>Verdaccio是一个简单的、零配置要求的本地私有 npm 注册表。无需整个数据库即可开始！Verdaccio 开箱即用，带有 自己的小型数据库，并且能够代理其他注册表（例如 npmjs.org），并在此过程中缓存下载的模块。对于那些希望扩展其存储功能的人，Verdaccio 支持各种社区制作的插件，以连接到服务，例如 Amazon 的 s3、Google Cloud Storage或创建您自己的插件。</p>
+</blockquote>
+<p>是Fork自sinopia，由于sinopia很长时间无人维护，于是verdaccio保持的原始sinopia的几乎相同的配置。 并不断维护修复issus。</p>
+<h4 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">npm install verdaccio</span><br><span class="line"><span class="comment">#or</span></span><br><span class="line">yarn global add verdaccio</span><br></pre></td></tr></table></figure>
+
+<h4 id="创建config-yaml"><a href="#创建config-yaml" class="headerlink" title="创建config.yaml"></a>创建config.yaml</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">which</span> verdaccio</span><br><span class="line"><span class="comment">#/usr/local/bin/verdaccio</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#创建项目目录，一般存放在/data/verdaccio下</span></span><br><span class="line"></span><br><span class="line">mkdir /data/verdaccio</span><br><span class="line"></span><br><span class="line">updatedb &amp;&amp; locate config.yaml</span><br><span class="line"><span class="comment">#/root/.config/verdaccio/config.yaml找到配置文件</span></span><br><span class="line"></span><br><span class="line">cp /root/.config/verdaccio/config.yaml /data/verdaccio/</span><br><span class="line"></span><br><span class="line">sed -ri <span class="string">&#x27;s#(.*url: ).*#\1https://registry.npm.taobao.org#&#x27;</span> /data/verdaccio/config.yaml</span><br><span class="line"></span><br><span class="line"><span class="comment">#更新config.yaml，添加 listen:0.0.0.0:4873</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>详细配置见官网：<a target="_blank" rel="noopener" href="https://verdaccio.org/zh-CN/docs/configuration">https://verdaccio.org/zh-CN/docs/configuration</a></p>
+<h4 id="配置verdaccio服务"><a href="#配置verdaccio服务" class="headerlink" title="配置verdaccio服务"></a>配置verdaccio服务</h4><p>一般我们可以同systemctl启动服务，你也可以使用service、nohup等后台挂起服务。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 我使用yarn安装的</span></span><br><span class="line"></span><br><span class="line">cp /usr/<span class="built_in">local</span>/share/.config/yarn/global/node_modules/verdaccio/systemd/verdaccio.service /etc/systemd/system/verdaccio.service</span><br><span class="line"></span><br><span class="line">sed -ri <span class="string">&#x27;s@^(ExecStart=).*@\1/usr/bin/verdaccio --config /data/verdaccio/config.yaml@&#x27;</span> !$</span><br></pre></td></tr></table></figure>
+
+<h4 id="配置完如下"><a href="#配置完如下" class="headerlink" title="配置完如下"></a>配置完如下</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[Unit]</span><br><span class="line">Description&#x3D;Verdaccio lightweight npm proxy registry</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">Type&#x3D;simple</span><br><span class="line">Restart&#x3D;on-failure</span><br><span class="line">#User&#x3D;root 这里一定主要user</span><br><span class="line">ExecStart&#x3D;&#x2F;usr&#x2F;bin&#x2F;verdaccio --config &#x2F;data&#x2F;verdaccio&#x2F;config.yaml</span><br><span class="line"></span><br><span class="line">[Install]</span><br><span class="line">WantedBy&#x3D;multi-user.target</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h4 id="启动verdaccio服务"><a href="#启动verdaccio服务" class="headerlink" title="启动verdaccio服务"></a>启动verdaccio服务</h4><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">systemctl <span class="built_in">enable</span> verdaccio.service</span><br><span class="line">systemctl start verdaccio.service</span><br><span class="line">systemctl status verdaccio.service</span><br></pre></td></tr></table></figure>
+
+<h4 id="配置nginx"><a href="#配置nginx" class="headerlink" title="配置nginx"></a>配置nginx</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen          80;             # the port nginx is listening on</span><br><span class="line">    server_name     xxxxx.lpniu.com;    # setup your domain here</span><br><span class="line"></span><br><span class="line">    gzip            on;</span><br><span class="line">    gzip_types      text&#x2F;plain application&#x2F;xml text&#x2F;css application&#x2F;javascript;</span><br><span class="line">    gzip_min_length 1000;</span><br><span class="line"></span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        expires $expires;</span><br><span class="line"></span><br><span class="line">        proxy_redirect                      off;</span><br><span class="line">        proxy_set_header Host               $host;</span><br><span class="line">        proxy_set_header X-Real-IP          $remote_addr;</span><br><span class="line">        proxy_set_header X-Forwarded-For    $proxy_add_x_forwarded_for;</span><br><span class="line">        proxy_set_header X-Forwarded-Proto  $scheme;</span><br><span class="line">        proxy_read_timeout          1m;</span><br><span class="line">        proxy_connect_timeout       1m;</span><br><span class="line">        proxy_pass                          http:&#x2F;&#x2F;127.0.0.1:4873;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>预览如下<br><img src="https://github.com/kukuyuhai/walker/blob/master/source/images/WechatIMG23.png" alt="WechatIMG23"></p>
+<h3 id="如何使用"><a href="#如何使用" class="headerlink" title="如何使用"></a>如何使用</h3><h3 id="npm-5-x-6-x"><a href="#npm-5-x-6-x" class="headerlink" title="npm (5.x, 6.x)#"></a>npm (5.x, 6.x)<a target="_blank" rel="noopener" href="https://verdaccio.org/zh-CN/docs/cli-registry#npm-5x-6x">#</a></h3><p>To set the registry in the <code>.npmrc</code> file use the following:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm <span class="built_in">set</span> registry http://localhost:4873/ <span class="comment">#替换成nginx配置的servername或者ip</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install --registry http://localhost:4873 <span class="comment">#替换成nginx配置的servername或者ip</span></span><br></pre></td></tr></table></figure>
+
+<p>在你自己的<code>.npmrc</code>文件中，自定义一个<code>registry</code>字段</p>
+<p>.npmrc</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">registry=http://localhost:4873</span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p>Since <code>npm@5.x</code> <a target="_blank" rel="noopener" href="https://medium.com/verdaccio/verdaccio-and-deterministic-lock-files-5339d82d611e">ignores the <code>resolve</code> field in defined in the lock files</a>, while <code>pnpm@4.x</code> and <code>yarn@1.x</code> does the opposite.</p>
+</blockquote>
+<p>或者在你的<code>package.json</code> 添加 <code>publishConfig</code></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;  <span class="attr">&quot;publishConfig&quot;</span>: &#123;    <span class="attr">&quot;registry&quot;</span>: <span class="string">&quot;http://localhost:4873&quot;</span>  &#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>通过使用<code>publishConfig</code>，前两个选项将被忽略，仅当您希望确保包不会在其他任何地方发布时才使用此选项。</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/walker/tags/npm-%E7%A7%81%E6%9C%89%E5%BA%93-verdaccio/" rel="tag"># npm 私有库 verdaccio</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+            </div>
+            <div class="post-nav-item">
+                <a href="/walker/2021/01/28/java%E5%85%A5%E9%97%A8%E6%8C%87%E5%BC%95/" rel="next" title="java入门指引">
+                  java入门指引 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+      
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      
+
+      
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kukuyuhai</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="//cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/walker/js/utils.js"></script><script src="/walker/js/motion.js"></script><script src="/walker/js/schemes/muse.js"></script><script src="/walker/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
