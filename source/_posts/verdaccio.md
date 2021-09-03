@@ -1,6 +1,6 @@
 ---
 title: 如何有verdaccio构建一个私有npm仓库？
-date: 2021-1-28 15:46:20
+date: 2021-1-28 15:46
 tags: npm 私有库 verdaccio
 ---
 
