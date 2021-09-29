@@ -1,4 +1,10 @@
-#### 常规http配置
+---
+title: nginx基本配置backup
+date: 2021-9-18 16:18
+tags: nginx https
+---
+
+#### 常规 http 配置
 
 ```
 server {
@@ -38,7 +44,7 @@ server {
 
 ```
 
-#### https nginx配置
+#### https nginx 配置
 
 ```
 server {
