@@ -168,7 +168,7 @@
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
@@ -208,7 +208,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://kukuyuhai.github.io/walker/2021/09/18/nginx%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE/">
+    <link itemprop="mainEntityOfPage" href="https://kukuyuhai.github.io/walker/2021/09/18/nginx%20pipeline/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/walker/images/avatar.gif">
@@ -222,7 +222,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/walker/2021/09/18/nginx%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE/" class="post-title-link" itemprop="url">未命名</a>
+            <a href="/walker/2021/09/18/nginx%20pipeline/" class="post-title-link" itemprop="url">jenkins pipeline 实用脚本</a>
         </h2>
 
         <div class="post-meta-container">
@@ -233,8 +233,15 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2021-09-18 16:22:36" itemprop="dateCreated datePublished" datetime="2021-09-18T16:22:36+08:00">2021-09-18</time>
+      <time title="创建时间：2021-09-18 16:18:00" itemprop="dateCreated datePublished" datetime="2021-09-18T16:18:00+08:00">2021-09-18</time>
     </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-09-29 22:12:34" itemprop="dateModified" datetime="2021-09-29T22:12:34+08:00">2021-09-29</time>
+      </span>
 
   
 </div>
@@ -246,9 +253,10 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h4 id="常规http配置"><a href="#常规http配置" class="headerlink" title="常规http配置"></a>常规http配置</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen       80;</span><br><span class="line">    server_name  test.chinadep.com;</span><br><span class="line"></span><br><span class="line">    root &#x2F;opt&#x2F;project&#x2F;daep-fe;</span><br><span class="line">    index index.html index.htm;</span><br><span class="line"></span><br><span class="line">    charset utf-8;</span><br><span class="line">    access_log  &#x2F;opt&#x2F;project&#x2F;logs&#x2F;nginx&#x2F;daep_access_nginx.log;</span><br><span class="line">    error_log &#x2F;opt&#x2F;project&#x2F;logs&#x2F;nginx&#x2F;daep_error_nginx.log;</span><br><span class="line"></span><br><span class="line">    client_max_body_size 55m;</span><br><span class="line"></span><br><span class="line">    gzip on;</span><br><span class="line">    gzip_min_length 50k;</span><br><span class="line">    gzip_comp_level 2;</span><br><span class="line">    gzip_types text&#x2F;plain application&#x2F;javascript application&#x2F;x-javascript text&#x2F;css application&#x2F;xml text&#x2F;javascript application&#x2F;x-httpd-php image&#x2F;jpeg image&#x2F;gif image&#x2F;png;</span><br><span class="line">    gzip_vary on;</span><br><span class="line"></span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        try_files $uri $uri&#x2F; &#x2F;index.html;</span><br><span class="line">        index index.html index.htm;</span><br><span class="line">        autoindex on;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    location &#x2F;daep &#123;</span><br><span class="line">        # rewrite  ^&#x2F;api&#x2F;?(.*)$ &#x2F;$1 break;</span><br><span class="line">        proxy_pass   http:&#x2F;&#x2F;10.101.12.23:8093;</span><br><span class="line">        proxy_set_header Host $http_host;</span><br><span class="line">        add_header backendIP $upstream_addr;</span><br><span class="line">        add_header backendCode $upstream_status;</span><br><span class="line">        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h4 id="https-nginx配置"><a href="#https-nginx配置" class="headerlink" title="https nginx配置"></a>https nginx配置</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">        listen 80;</span><br><span class="line">        server_name hyadmin.chinadep.com;</span><br><span class="line">        rewrite ^(.*)$  https:&#x2F;&#x2F;$host$1 permanent;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">        listen 443;</span><br><span class="line">        server_name hyadmin.chinadep.com;</span><br><span class="line">        ssl on;</span><br><span class="line">        ssl_certificate &#x2F;etc&#x2F;nginx&#x2F;sslkey&#x2F;_.chinadep.com_bundle.crt;</span><br><span class="line">        ssl_certificate_key &#x2F;etc&#x2F;nginx&#x2F;sslkey&#x2F;_.chinadep.com.key;</span><br><span class="line">        ssl_session_timeout 60m;</span><br><span class="line">        ssl_protocols TLSv1 TLSv1.1 TLSv1.2;</span><br><span class="line">        ssl_ciphers RC4:HIGH:!aNULL:!MD5;</span><br><span class="line">        ssl_prefer_server_ciphers on;</span><br><span class="line">        root &#x2F;opt&#x2F;project&#x2F;daep-admin-fe;</span><br><span class="line">        gzip on;</span><br><span class="line">        gzip_http_version 1.0;</span><br><span class="line">        gzip_disable &quot;MSIE [1-6].&quot;;</span><br><span class="line">        gzip_types text&#x2F;plain application&#x2F;x-javascript text&#x2F;css text&#x2F;javascript application&#x2F;javascript;</span><br><span class="line">        access_log &#x2F;var&#x2F;log&#x2F;daep-admin&#x2F;access_all.log;</span><br><span class="line">        error_log &#x2F;var&#x2F;log&#x2F;daep-admin&#x2F;error_all.log;</span><br><span class="line">        gzip_comp_level 3;</span><br><span class="line">        charset utf-8;</span><br><span class="line"></span><br><span class="line">        location &#x2F;daep-admin &#123;</span><br><span class="line">            proxy_pass http:&#x2F;&#x2F;127.0.0.1:8091;</span><br><span class="line">            proxy_set_header Host $http_host;</span><br><span class="line">            proxy_set_header X-Real-IP $remote_addr;</span><br><span class="line">            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">            proxy_set_header X-Forwarded-Proto $scheme;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          <blockquote>
+<p>以下为jenkins流水线发布脚本。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line">    </span><br><span class="line">   tools &#123;</span><br><span class="line">        nodejs &#39;nodejs&#39;</span><br><span class="line">        </span><br><span class="line">   &#125;</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        stage(&#39;checkout&#39;)&#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                sh &#39;rm -rf *&#39;</span><br><span class="line">                git branch: &#39;********&#39;, credentialsId: &#39;**********&#39;, url: &#39;*******&#39;  </span><br><span class="line">            &#125;</span><br><span class="line">        &#125;  </span><br><span class="line">      </span><br><span class="line">        stage(&#39;Build&#39;) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                sh &quot;&quot;&quot;</span><br><span class="line">                    cnpm i </span><br><span class="line">                    npm run build:stage</span><br><span class="line">                    cd $WORKSPACE&#x2F;dist</span><br><span class="line">                    tar zcf static.tar.gz *</span><br><span class="line">                &quot;&quot;&quot;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; </span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    post&#123;</span><br><span class="line">        success&#123;</span><br><span class="line">            sshPublisher(publishers: [sshPublisherDesc(configName: &#39;kaifa&#39;, </span><br><span class="line">            transfers: [sshTransfer(cleanRemote: false, excludes: &#39;&#39;, execCommand: &#39;rm -rf &#x2F;opt&#x2F;project&#x2F;&#123;替换成相应文件目录&#125;&#x2F;*&#39;,           		</span><br><span class="line">            execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: &#39;[, ]+&#39;, </span><br><span class="line">            remoteDirectory: &#39;&#39;, remoteDirectorySDF: false, removePrefix: &#39;&#39;, sourceFiles: &#39;&#39;), sshTransfer(cleanRemote: false, </span><br><span class="line">            excludes: &#39;&#39;, execCommand: &#39;tar -zxvf &#x2F;opt&#x2F;project&#x2F;&#123;替换成相应文件目录&#125;&#x2F;static.tar.gz -C &#x2F;opt&#x2F;project&#x2F;&#123;替换成相应文件目录&#125;&#x2F;&#39;, execTimeout: 1200000, flatten: false, makeEmptyDirs: false, </span><br><span class="line">            noDefaultExcludes: false, patternSeparator: &#39;[, ]+&#39;, remoteDirectory: &#39;&#123;替换成相应文件目录&#125;&#39;, remoteDirectorySDF: false, </span><br><span class="line">            removePrefix: &#39;dist&#x2F;&#39;, sourceFiles: &#39;dist&#x2F;static.tar.gz&#39;, usePty: true)], usePromotionTimestamp: false, </span><br><span class="line">            useWorkspaceInPromotion: false, verbose: true)])</span><br><span class="line">            </span><br><span class="line">       &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
       
     </div>
 
@@ -274,7 +282,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://kukuyuhai.github.io/walker/2021/09/18/nginx%20pipeline/">
+    <link itemprop="mainEntityOfPage" href="https://kukuyuhai.github.io/walker/2021/09/18/nginx%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/walker/images/avatar.gif">
@@ -288,7 +296,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/walker/2021/09/18/nginx%20pipeline/" class="post-title-link" itemprop="url">jenkins pipeline 实用脚本</a>
+            <a href="/walker/2021/09/18/nginx%E5%9F%BA%E6%9C%AC%E9%85%8D%E7%BD%AE/" class="post-title-link" itemprop="url">nginx基本配置backup</a>
         </h2>
 
         <div class="post-meta-container">
@@ -298,10 +306,16 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2021-09-18 16:18:00 / 修改时间：16:22:36" itemprop="dateCreated datePublished" datetime="2021-09-18T16:18:00+08:00">2021-09-18</time>
+      <time title="创建时间：2021-09-18 16:18:00" itemprop="dateCreated datePublished" datetime="2021-09-18T16:18:00+08:00">2021-09-18</time>
     </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-09-29 22:12:34" itemprop="dateModified" datetime="2021-09-29T22:12:34+08:00">2021-09-29</time>
+      </span>
 
   
 </div>
@@ -313,10 +327,10 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <blockquote>
-<p>以下为jenkins流水线发布脚本。</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">pipeline &#123;</span><br><span class="line">    agent any</span><br><span class="line">    </span><br><span class="line">   tools &#123;</span><br><span class="line">        nodejs &#39;nodejs&#39;</span><br><span class="line">        </span><br><span class="line">   &#125;</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">    stages &#123;</span><br><span class="line">        stage(&#39;checkout&#39;)&#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                sh &#39;rm -rf *&#39;</span><br><span class="line">                git branch: &#39;********&#39;, credentialsId: &#39;**********&#39;, url: &#39;*******&#39;  </span><br><span class="line">            &#125;</span><br><span class="line">        &#125;  </span><br><span class="line">      </span><br><span class="line">        stage(&#39;Build&#39;) &#123;</span><br><span class="line">            steps &#123;</span><br><span class="line">                sh &quot;&quot;&quot;</span><br><span class="line">                    cnpm i </span><br><span class="line">                    npm run build:stage</span><br><span class="line">                    cd $WORKSPACE&#x2F;dist</span><br><span class="line">                    tar zcf static.tar.gz *</span><br><span class="line">                &quot;&quot;&quot;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; </span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    post&#123;</span><br><span class="line">        success&#123;</span><br><span class="line">            sshPublisher(publishers: [sshPublisherDesc(configName: &#39;kaifa&#39;, </span><br><span class="line">            transfers: [sshTransfer(cleanRemote: false, excludes: &#39;&#39;, execCommand: &#39;rm -rf &#x2F;opt&#x2F;project&#x2F;&#123;替换成相应文件目录&#125;&#x2F;*&#39;,           		</span><br><span class="line">            execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: &#39;[, ]+&#39;, </span><br><span class="line">            remoteDirectory: &#39;&#39;, remoteDirectorySDF: false, removePrefix: &#39;&#39;, sourceFiles: &#39;&#39;), sshTransfer(cleanRemote: false, </span><br><span class="line">            excludes: &#39;&#39;, execCommand: &#39;tar -zxvf &#x2F;opt&#x2F;project&#x2F;&#123;替换成相应文件目录&#125;&#x2F;static.tar.gz -C &#x2F;opt&#x2F;project&#x2F;&#123;替换成相应文件目录&#125;&#x2F;&#39;, execTimeout: 1200000, flatten: false, makeEmptyDirs: false, </span><br><span class="line">            noDefaultExcludes: false, patternSeparator: &#39;[, ]+&#39;, remoteDirectory: &#39;&#123;替换成相应文件目录&#125;&#39;, remoteDirectorySDF: false, </span><br><span class="line">            removePrefix: &#39;dist&#x2F;&#39;, sourceFiles: &#39;dist&#x2F;static.tar.gz&#39;, usePty: true)], usePromotionTimestamp: false, </span><br><span class="line">            useWorkspaceInPromotion: false, verbose: true)])</span><br><span class="line">            </span><br><span class="line">       &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          <h4 id="常规-http-配置"><a href="#常规-http-配置" class="headerlink" title="常规 http 配置"></a>常规 http 配置</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen       80;</span><br><span class="line">    server_name  test.chinadep.com;</span><br><span class="line"></span><br><span class="line">    root &#x2F;opt&#x2F;project&#x2F;daep-fe;</span><br><span class="line">    index index.html index.htm;</span><br><span class="line"></span><br><span class="line">    charset utf-8;</span><br><span class="line">    access_log  &#x2F;opt&#x2F;project&#x2F;logs&#x2F;nginx&#x2F;daep_access_nginx.log;</span><br><span class="line">    error_log &#x2F;opt&#x2F;project&#x2F;logs&#x2F;nginx&#x2F;daep_error_nginx.log;</span><br><span class="line"></span><br><span class="line">    client_max_body_size 55m;</span><br><span class="line"></span><br><span class="line">    gzip on;</span><br><span class="line">    gzip_min_length 50k;</span><br><span class="line">    gzip_comp_level 2;</span><br><span class="line">    gzip_types text&#x2F;plain application&#x2F;javascript application&#x2F;x-javascript text&#x2F;css application&#x2F;xml text&#x2F;javascript application&#x2F;x-httpd-php image&#x2F;jpeg image&#x2F;gif image&#x2F;png;</span><br><span class="line">    gzip_vary on;</span><br><span class="line"></span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        try_files $uri $uri&#x2F; &#x2F;index.html;</span><br><span class="line">        index index.html index.htm;</span><br><span class="line">        autoindex on;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    location &#x2F;daep &#123;</span><br><span class="line">        # rewrite  ^&#x2F;api&#x2F;?(.*)$ &#x2F;$1 break;</span><br><span class="line">        proxy_pass   http:&#x2F;&#x2F;10.101.12.23:8093;</span><br><span class="line">        proxy_set_header Host $http_host;</span><br><span class="line">        add_header backendIP $upstream_addr;</span><br><span class="line">        add_header backendCode $upstream_status;</span><br><span class="line">        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h4 id="https-nginx-配置"><a href="#https-nginx-配置" class="headerlink" title="https nginx 配置"></a>https nginx 配置</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">        listen 80;</span><br><span class="line">        server_name hyadmin.chinadep.com;</span><br><span class="line">        rewrite ^(.*)$  https:&#x2F;&#x2F;$host$1 permanent;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">        listen 443;</span><br><span class="line">        server_name hyadmin.chinadep.com;</span><br><span class="line">        ssl on;</span><br><span class="line">        ssl_certificate &#x2F;etc&#x2F;nginx&#x2F;sslkey&#x2F;_.chinadep.com_bundle.crt;</span><br><span class="line">        ssl_certificate_key &#x2F;etc&#x2F;nginx&#x2F;sslkey&#x2F;_.chinadep.com.key;</span><br><span class="line">        ssl_session_timeout 60m;</span><br><span class="line">        ssl_protocols TLSv1 TLSv1.1 TLSv1.2;</span><br><span class="line">        ssl_ciphers RC4:HIGH:!aNULL:!MD5;</span><br><span class="line">        ssl_prefer_server_ciphers on;</span><br><span class="line">        root &#x2F;opt&#x2F;project&#x2F;daep-admin-fe;</span><br><span class="line">        gzip on;</span><br><span class="line">        gzip_http_version 1.0;</span><br><span class="line">        gzip_disable &quot;MSIE [1-6].&quot;;</span><br><span class="line">        gzip_types text&#x2F;plain application&#x2F;x-javascript text&#x2F;css text&#x2F;javascript application&#x2F;javascript;</span><br><span class="line">        access_log &#x2F;var&#x2F;log&#x2F;daep-admin&#x2F;access_all.log;</span><br><span class="line">        error_log &#x2F;var&#x2F;log&#x2F;daep-admin&#x2F;error_all.log;</span><br><span class="line">        gzip_comp_level 3;</span><br><span class="line">        charset utf-8;</span><br><span class="line"></span><br><span class="line">        location &#x2F;daep-admin &#123;</span><br><span class="line">            proxy_pass http:&#x2F;&#x2F;127.0.0.1:8091;</span><br><span class="line">            proxy_set_header Host $http_host;</span><br><span class="line">            proxy_set_header X-Real-IP $remote_addr;</span><br><span class="line">            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">            proxy_set_header X-Forwarded-Proto $scheme;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
       
     </div>
 
@@ -374,7 +388,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-09-18 16:22:36" itemprop="dateModified" datetime="2021-09-18T16:22:36+08:00">2021-09-18</time>
+        <time title="修改时间：2021-09-29 22:12:34" itemprop="dateModified" datetime="2021-09-29T22:12:34+08:00">2021-09-29</time>
       </span>
 
   
@@ -445,7 +459,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-09-18 16:22:36" itemprop="dateModified" datetime="2021-09-18T16:22:36+08:00">2021-09-18</time>
+        <time title="修改时间：2021-09-29 22:12:34" itemprop="dateModified" datetime="2021-09-29T22:12:34+08:00">2021-09-29</time>
       </span>
 
   
@@ -557,7 +571,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-09-18 16:22:36" itemprop="dateModified" datetime="2021-09-18T16:22:36+08:00">2021-09-18</time>
+        <time title="修改时间：2021-09-29 22:12:34" itemprop="dateModified" datetime="2021-09-29T22:12:34+08:00">2021-09-29</time>
       </span>
 
   
@@ -660,7 +674,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-09-18 16:22:36" itemprop="dateModified" datetime="2021-09-18T16:22:36+08:00">2021-09-18</time>
+        <time title="修改时间：2021-09-29 22:12:34" itemprop="dateModified" datetime="2021-09-29T22:12:34+08:00">2021-09-29</time>
       </span>
 
   
@@ -746,7 +760,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-09-18 16:22:36" itemprop="dateModified" datetime="2021-09-18T16:22:36+08:00">2021-09-18</time>
+        <time title="修改时间：2021-09-29 22:12:34" itemprop="dateModified" datetime="2021-09-29T22:12:34+08:00">2021-09-29</time>
       </span>
 
   
@@ -818,7 +832,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-09-18 16:22:36" itemprop="dateModified" datetime="2021-09-18T16:22:36+08:00">2021-09-18</time>
+        <time title="修改时间：2021-09-29 22:12:34" itemprop="dateModified" datetime="2021-09-29T22:12:34+08:00">2021-09-29</time>
       </span>
 
   
