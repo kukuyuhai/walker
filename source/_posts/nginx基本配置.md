@@ -82,3 +82,17 @@ server {
         }
 }
 ```
+
+### 异常处理
+
+#### 1.nginx: [alert] kill(11, 1) failed (3: No such process)
+
+在重启 nginx 容器后，报错：nginx: [alert] kill(11, 1) failed (3: No such process)
+原因：启动 nginx 服务未启动成功，可以重新启动启动 nginx 服务，或者：重新加载 nginx 配置。
+重新加载 nginx 配置方法：
+
+```sh
+    whereis nginx #定位nginx文件位置
+    /usr/local/nginx/nginx -c /usr/local/nginx/nginx.conf #指定配置文件地址
+    nginx -s reload #重新加载配置文件
+```
